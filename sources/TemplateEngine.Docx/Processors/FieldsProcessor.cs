@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml.Linq;
 using DocumentFormat.OpenXml.Wordprocessing;
 using TemplateEngine.Docx.Errors;
@@ -50,7 +51,10 @@ namespace TemplateEngine.Docx.Processors
 			}
 
             var newValue = field.IsHidden ? "" : field.Value;
-			contentControl.ReplaceContentControlWithNewValue(newValue);
+			
+			{
+				contentControl.ReplaceContentControlWithNewValue(newValue);
+			}
 
 			processResult.AddItemToHandled(item);
 

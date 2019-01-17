@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -99,7 +100,28 @@ namespace TemplateEngine.Docx.Processors
 
 		public ProcessResult FillContent(XElement content, Content data)
 		{
+			// process IF keyword
+			FillIfKeyword(content, data.AsEnumerable());
 			return FillContent(content, data.AsEnumerable());
+		}
+
+		private void FillIfKeyword(XElement content, IEnumerable<IContentItem> enumerable)
+		{
+			var contentControls = FindKeywordControls(content).ToList();
+
+			foreach (var xElement in contentControls)
+			{
+				if (xElement.SdtTagName().EndsWith("1>2")) xElement.Remove(); // throw new Exception(xElement.ToString());
+			}
+		}
+
+		private IEnumerable<XElement> FindKeywordControls(XElement content)
+		{
+			return content
+			  //top level content controls
+			  .FirstLevelDescendantsAndSelf(W.sdt)
+			  //with specified tagName
+			  .Where(sdt => sdt.SdtTagName().StartsWith("if ", StringComparison.OrdinalIgnoreCase));
 		}
 
 		public ProcessResult FillContent(XElement content, IContentItem data)
